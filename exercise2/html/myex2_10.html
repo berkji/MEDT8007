@@ -1,0 +1,422 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>myex2_10</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-11-07"><meta name="DC.source" content="myex2_10.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Impulse setup</a></li><li><a href="#3">setup tx Apod</a></li><li><a href="#4">pressure response from focus point</a></li><li><a href="#5">receive sensitity response</a></li><li><a href="#6">pressure response from XZ plane based on local depth max</a></li><li><a href="#7">pulse echo response</a></li><li><a href="#8">pressure response from XZ plane based on local depth max</a></li></ul></div><pre class="codeinput">close <span class="string">all</span>;
+clear <span class="string">all</span>;
+
+no_elements = 64;
+pitch = 0.290e-3;
+kerf = 0.025e-3;
+width = pitch - kerf;
+height=13e-3;
+no_sub_x = 5;
+no_sub_y = 15;
+focus = [0 0 60]/1000;
+steeringAngle = 0;
+Rfocus = 60e-3;
+focusRange=60e-3;
+focus = focusRange*([sin(steeringAngle*pi/180),0,cos(steeringAngle*pi/180)]);
+c =1540;
+field_init(0);
+
+fn_receive = 2.5;
+apodTx = 0;
+apodRx = 0;
+
+Th_tnx = xdc_focused_array(no_elements, width, height, kerf, Rfocus, no_sub_x, no_sub_y, focus);
+Th_rcv = xdc_focused_array(no_elements, width, height, kerf, Rfocus, no_sub_x, no_sub_y, focus);
+figure;
+show_xdc_geir(Th_tnx, 1);
+axis <span class="string">equal</span>;
+view(3);
+
+<span class="comment">%</span>
+fs = 50e6; <span class="comment">%sampling freq (100Mhz)</span>
+f0 = 2.5e6; <span class="comment">% transducer center freq (2.5Mhz)</span>
+t0 = 1/f0;
+dt = 1/fs;  <span class="comment">%sampling period</span>
+set_sampling(fs);
+</pre><pre class="codeoutput">      *------------------------------------------------------------*
+      *                                                            *
+      *                      F I E L D   I I                       *
+      *                                                            *
+      *              Simulator for ultrasound systems              *
+      *                                                            *
+      *             Copyright by Joergen Arendt Jensen             *
+      *    Version 3.24, May 12, 2014 (Matlab 8.20 version)        *
+      *                  Web-site: field-ii.dk                     *
+      *                                                            *
+      *     This is citationware. Note the terms and conditions    *
+      *     for use on the web-site at:                            *
+      *               field-ii.dk/?copyright.html                  *
+      *  It is illegal to use this program, if the rules in the    *
+      *  copyright statement is not followed.                      *
+      *------------------------------------------------------------*
+Read rectangular data for plotting....
+Plots aperture with physical element number...
+Warning:  Remember to set all pulses in apertures for the new sampling frequency
+</pre><img vspace="5" hspace="5" src="myex2_10_01.png" alt=""> <h2 id="2">Impulse setup</h2><pre class="codeinput">t_ir = -2/f0:1/fs:2/f0;
+Bw = 0.6;
+impulse_response = gauspuls(t_ir, f0, Bw);
+xdc_impulse (Th_tnx, impulse_response);
+xdc_impulse (Th_rcv, impulse_response);
+
+<span class="comment">% figure;</span>
+excitation = square(2*pi*f0*(0:dt:1.5*t0));
+<span class="comment">% plot(0:dt:1.5*t0, excitation);</span>
+<span class="comment">% xlabel("time (s)");</span>
+<span class="comment">% title("excitation pulse");</span>
+xdc_excitation(Th_tnx, excitation);
+<span class="comment">% figure;</span>
+<span class="comment">% plot(t_ir, impulse_response);</span>
+<span class="comment">% xlabel("time (s)");</span>
+<span class="comment">% title("impulse response");</span>
+<span class="comment">% figure;</span>
+<span class="comment">% freqz(impulse_response,1,1024,fs);</span>
+
+<span class="comment">%%define receive focal regions</span>
+Nfr = 300;
+focal_area_start = 2/1000;
+focal_area_end   = 200/1000;
+the_regions = linspace(focal_area_start, focal_area_end, Nfr+1);
+the_regions_times = (the_regions(1: end -1)/c)';
+the_regions_height = (focal_area_end - focal_area_start)/Nfr;
+the_regions_focals = the_regions(1:end -1) + the_regions_height/2;
+num_active_ele = round(the_regions_focals/(fn_receive*(width+kerf)));
+
+num_pre_ele = 0;
+num_post_ele = 0;
+num_active_ele_window = 0;
+apodization_aperature = zeros(Nfr, no_elements);
+<span class="keyword">for</span> ii = 1:Nfr
+    <span class="keyword">if</span> num_active_ele(ii)&gt; no_elements
+        num_active_ele(ii) = no_elements;
+    <span class="keyword">end</span>
+    num_pre_ele(ii) = ceil(no_elements/2 - num_active_ele(ii)/2);  <span class="comment">% Number of element set to zero on the LEFT hand side of the apperture</span>
+    num_post_ele(ii) = no_elements - num_pre_ele(ii) - num_active_ele(ii);  <span class="comment">% Number of element set to zero on the RIGHT hand side of the apperture</span>
+
+    num_active_ele_window = hanning(num_active_ele(ii))';
+    <span class="comment">%num_active_ele_window = ones(1,num_active_ele(ii));</span>
+
+    apodization_aperature(ii,:) = [zeros(1,num_pre_ele(ii)) num_active_ele_window zeros(1,num_post_ele(ii))];
+
+<span class="keyword">end</span>
+
+xdc_apodization(Th_rcv, the_regions_times, apodization_aperature);
+figure;
+imagesc(1:no_elements, the_regions_focals*1000, apodization_aperature);
+title(<span class="string">'receive aperature with apod'</span>);
+xlabel(<span class="string">'No. of elements'</span>);
+ylabel(<span class="string">'depth(mm)'</span>);
+
+
+
+receiveAngle = 0;
+xdc_dynamic_focus(Th_rcv, 0, receiveAngle*pi/180, 0);
+</pre><img vspace="5" hspace="5" src="myex2_10_02.png" alt=""> <h2 id="3">setup tx Apod</h2><pre class="codeinput">txApodWeights = ones(1, no_elements);
+<span class="comment">%txApodWeights = hanning(no_elements)';</span>
+<span class="comment">%txApodWeights = tukeywin(no_elements, 0.3)';</span>
+<span class="comment">%figure;</span>
+<span class="comment">%stem(txApodWeights);</span>
+<span class="comment">%xdc_apodization(Th_tnx, 0, txApodWeights);</span>
+xdc_apodization(Th_tnx, the_regions_times, apodization_aperature);
+</pre><h2 id="4">pressure response from focus point</h2><pre class="codeinput">Nx = 161; Nz = 59;
+x0=linspace(-15e-3,15e-3,Nx);
+z0=linspace( 5e-3,100e-3,Nz);
+[X,Z]=meshgrid(x0,z0);
+measure_point = [X(:), zeros(length(X(:)),1),Z(:)];
+</pre><h2 id="5">receive sensitity response</h2><pre class="codeinput">[hp_rv0, t_start]=calc_hp(Th_rcv, measure_point);
+figure;
+bp = sqrt(mean(hp_rv0.^2));
+bp = reshape(bp, Nz, Nx);
+bp = bp/max(bp(:));
+pcolor(x0*1000,z0*1000, 20*log10(bp));
+shading <span class="string">interp</span>
+title(<span class="string">"receive sensitity response [dB]"</span>)
+xlabel(<span class="string">'Azimuth [mm]'</span>);
+ylabel(<span class="string">'Range [mm]'</span>);
+caxis([-50 0]); <span class="comment">% Set dynamic range</span>
+colormap(jet(256));
+colorbar
+</pre><pre class="codeoutput"> 3 seconds used for the calculation                           
+</pre><img vspace="5" hspace="5" src="myex2_10_03.png" alt=""> <h2 id="6">pressure response from XZ plane based on local depth max</h2><pre class="codeinput">figure;
+bp = sqrt(mean(hp_rv0.^2));
+bp = reshape(bp, Nz, Nx);
+bp = bp./repmat(max(bp')', 1,Nx);
+pcolor(x0*1000,z0*1000, 20*log10(bp));
+shading <span class="string">interp</span>
+title(<span class="string">"pressure response [dB]"</span>)
+xlabel(<span class="string">'Azimuth [mm]'</span>);
+ylabel(<span class="string">'Range [mm]'</span>);
+caxis([-50 0]); <span class="comment">% Set dynamic range</span>
+colormap(jet(256));
+colorbar
+</pre><img vspace="5" hspace="5" src="myex2_10_04.png" alt=""> <h2 id="7">pulse echo response</h2><pre class="codeinput">[hhp_rv0, t_start]=calc_hhp(Th_tnx, Th_rcv, measure_point);
+figure;
+bp = sqrt(mean(hhp_rv0.^2));
+bp = reshape(bp, Nz, Nx);
+bp = bp/max(bp(:));
+pcolor(x0*1000,z0*1000, 20*log10(bp));
+shading <span class="string">interp</span>
+title(<span class="string">"pulse echo sensitity response [dB]"</span>)
+xlabel(<span class="string">'Azimuth [mm]'</span>);
+ylabel(<span class="string">'Range [mm]'</span>);
+caxis([-50 0]); <span class="comment">% Set dynamic range</span>
+colormap(jet(256));
+colorbar
+</pre><pre class="codeoutput"> 5 seconds used for the calculation                           
+</pre><img vspace="5" hspace="5" src="myex2_10_05.png" alt=""> <h2 id="8">pressure response from XZ plane based on local depth max</h2><pre class="codeinput">figure;
+bp = sqrt(mean(hhp_rv0.^2));
+bp = reshape(bp, Nz, Nx);
+bp = bp./repmat(max(bp')', 1,Nx);
+pcolor(x0*1000,z0*1000, 20*log10(bp));
+shading <span class="string">interp</span>
+title(<span class="string">"pulse echo response [dB] based on local depth"</span>)
+xlabel(<span class="string">'Azimuth [mm]'</span>);
+ylabel(<span class="string">'Range [mm]'</span>);
+caxis([-50 0]); <span class="comment">% Set dynamic range</span>
+colormap(jet(256));
+colorbar
+</pre><img vspace="5" hspace="5" src="myex2_10_06.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+close all;
+clear all;
+
+no_elements = 64;
+pitch = 0.290e-3;
+kerf = 0.025e-3;
+width = pitch - kerf;
+height=13e-3;
+no_sub_x = 5;
+no_sub_y = 15;
+focus = [0 0 60]/1000;
+steeringAngle = 0; 
+Rfocus = 60e-3;
+focusRange=60e-3;
+focus = focusRange*([sin(steeringAngle*pi/180),0,cos(steeringAngle*pi/180)]);
+c =1540;
+field_init(0);
+
+fn_receive = 2.5;
+apodTx = 0;
+apodRx = 0;
+
+Th_tnx = xdc_focused_array(no_elements, width, height, kerf, Rfocus, no_sub_x, no_sub_y, focus);
+Th_rcv = xdc_focused_array(no_elements, width, height, kerf, Rfocus, no_sub_x, no_sub_y, focus);
+figure;
+show_xdc_geir(Th_tnx, 1);
+axis equal;
+view(3);
+
+% 
+fs = 50e6; %sampling freq (100Mhz)
+f0 = 2.5e6; % transducer center freq (2.5Mhz)
+t0 = 1/f0; 
+dt = 1/fs;  %sampling period
+set_sampling(fs);
+
+
+%% Impulse setup
+t_ir = -2/f0:1/fs:2/f0;
+Bw = 0.6;
+impulse_response = gauspuls(t_ir, f0, Bw);
+xdc_impulse (Th_tnx, impulse_response);
+xdc_impulse (Th_rcv, impulse_response);
+
+% figure;
+excitation = square(2*pi*f0*(0:dt:1.5*t0));
+% plot(0:dt:1.5*t0, excitation);
+% xlabel("time (s)");
+% title("excitation pulse");
+xdc_excitation(Th_tnx, excitation);
+% figure;
+% plot(t_ir, impulse_response);
+% xlabel("time (s)");
+% title("impulse response");
+% figure;
+% freqz(impulse_response,1,1024,fs);
+
+%%define receive focal regions
+Nfr = 300;
+focal_area_start = 2/1000;
+focal_area_end   = 200/1000;
+the_regions = linspace(focal_area_start, focal_area_end, Nfr+1);
+the_regions_times = (the_regions(1: end -1)/c)';
+the_regions_height = (focal_area_end - focal_area_start)/Nfr;
+the_regions_focals = the_regions(1:end -1) + the_regions_height/2;
+num_active_ele = round(the_regions_focals/(fn_receive*(width+kerf)));
+
+num_pre_ele = 0;
+num_post_ele = 0;
+num_active_ele_window = 0;
+apodization_aperature = zeros(Nfr, no_elements);
+for ii = 1:Nfr
+    if num_active_ele(ii)> no_elements
+        num_active_ele(ii) = no_elements;
+    end
+    num_pre_ele(ii) = ceil(no_elements/2 - num_active_ele(ii)/2);  % Number of element set to zero on the LEFT hand side of the apperture
+    num_post_ele(ii) = no_elements - num_pre_ele(ii) - num_active_ele(ii);  % Number of element set to zero on the RIGHT hand side of the apperture
+    
+    num_active_ele_window = hanning(num_active_ele(ii))';
+    %num_active_ele_window = ones(1,num_active_ele(ii));
+    
+    apodization_aperature(ii,:) = [zeros(1,num_pre_ele(ii)) num_active_ele_window zeros(1,num_post_ele(ii))];
+    
+end
+
+xdc_apodization(Th_rcv, the_regions_times, apodization_aperature);
+figure;
+imagesc(1:no_elements, the_regions_focals*1000, apodization_aperature);
+title('receive aperature with apod');
+xlabel('No. of elements');
+ylabel('depth(mm)');
+
+
+
+receiveAngle = 0;
+xdc_dynamic_focus(Th_rcv, 0, receiveAngle*pi/180, 0);
+
+%% setup tx Apod
+txApodWeights = ones(1, no_elements);
+%txApodWeights = hanning(no_elements)';
+%txApodWeights = tukeywin(no_elements, 0.3)';
+%figure;
+%stem(txApodWeights);
+%xdc_apodization(Th_tnx, 0, txApodWeights);
+xdc_apodization(Th_tnx, the_regions_times, apodization_aperature);
+
+%% pressure response from focus point 
+Nx = 161; Nz = 59;
+x0=linspace(-15e-3,15e-3,Nx);
+z0=linspace( 5e-3,100e-3,Nz);
+[X,Z]=meshgrid(x0,z0);
+measure_point = [X(:), zeros(length(X(:)),1),Z(:)];
+
+%% receive sensitity response
+[hp_rv0, t_start]=calc_hp(Th_rcv, measure_point);
+figure;
+bp = sqrt(mean(hp_rv0.^2));
+bp = reshape(bp, Nz, Nx);
+bp = bp/max(bp(:));
+pcolor(x0*1000,z0*1000, 20*log10(bp));
+shading interp
+title("receive sensitity response [dB]")
+xlabel('Azimuth [mm]');
+ylabel('Range [mm]');
+caxis([-50 0]); % Set dynamic range
+colormap(jet(256));
+colorbar
+
+%% pressure response from XZ plane based on local depth max
+figure;
+bp = sqrt(mean(hp_rv0.^2));
+bp = reshape(bp, Nz, Nx);
+bp = bp./repmat(max(bp')', 1,Nx);
+pcolor(x0*1000,z0*1000, 20*log10(bp));
+shading interp
+title("pressure response [dB]")
+xlabel('Azimuth [mm]');
+ylabel('Range [mm]');
+caxis([-50 0]); % Set dynamic range
+colormap(jet(256));
+colorbar
+
+
+%% pulse echo response
+[hhp_rv0, t_start]=calc_hhp(Th_tnx, Th_rcv, measure_point);
+figure;
+bp = sqrt(mean(hhp_rv0.^2));
+bp = reshape(bp, Nz, Nx);
+bp = bp/max(bp(:));
+pcolor(x0*1000,z0*1000, 20*log10(bp));
+shading interp
+title("pulse echo sensitity response [dB]")
+xlabel('Azimuth [mm]');
+ylabel('Range [mm]');
+caxis([-50 0]); % Set dynamic range
+colormap(jet(256));
+colorbar
+
+%% pressure response from XZ plane based on local depth max
+figure;
+bp = sqrt(mean(hhp_rv0.^2));
+bp = reshape(bp, Nz, Nx);
+bp = bp./repmat(max(bp')', 1,Nx);
+pcolor(x0*1000,z0*1000, 20*log10(bp));
+shading interp
+title("pulse echo response [dB] based on local depth")
+xlabel('Azimuth [mm]');
+ylabel('Range [mm]');
+caxis([-50 0]); % Set dynamic range
+colormap(jet(256));
+colorbar
+
+
+
+##### SOURCE END #####
+--></body></html>

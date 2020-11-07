@@ -1,0 +1,292 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Ex2_3</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-10-01"><meta name="DC.source" content="Ex2_3.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">make sure that field_init has been called</a></li><li><a href="#3">DEFINE ARRAY</a></li><li><a href="#4">GENERATE TRANSMIT APERTURE</a></li><li><a href="#5">SET THE IMPULSE RESPONSE AND EXCITATION OF THE TRANSMIT APERTURE</a></li><li><a href="#6">DEFINE MEASUREMENT POINTS</a></li><li><a href="#7">CALCULATE SPATIAL IMPULSE RESPONSE AND TRANSMIT PRESSURE</a></li><li><a href="#8">PLOT RESULTS</a></li></ul></div><pre class="codeinput"><span class="comment">% Eksempel p&#65533; enkelt fasestyrt array i Field II</span>
+</pre><h2 id="2">make sure that field_init has been called</h2><pre class="codeinput">eval(<span class="string">'field_init(0)'</span>,<span class="string">'1;'</span>)
+</pre><pre class="codeoutput">      *------------------------------------------------------------*
+      *                                                            *
+      *                      F I E L D   I I                       *
+      *                                                            *
+      *              Simulator for ultrasound systems              *
+      *                                                            *
+      *             Copyright by Joergen Arendt Jensen             *
+      *    Version 3.24, May 12, 2014 (Matlab 8.20 version)        *
+      *                  Web-site: field-ii.dk                     *
+      *                                                            *
+      *     This is citationware. Note the terms and conditions    *
+      *     for use on the web-site at:                            *
+      *               field-ii.dk/?copyright.html                  *
+      *  It is illegal to use this program, if the rules in the    *
+      *  copyright statement is not followed.                      *
+      *------------------------------------------------------------*
+</pre><h2 id="3">DEFINE ARRAY</h2><pre class="codeinput">c = 1540;                   <span class="comment">% Speed of sound</span>
+f0 = 2.5e6;                 <span class="comment">% Transducer center frequency [Hz]</span>
+fs = 100e6;                 <span class="comment">% Sampling frequency [Hz]</span>
+lambda = c/f0;              <span class="comment">% Wavelength</span>
+element_height = 13/1000;   <span class="comment">% Height of element [m] (elevation direction)</span>
+pitch = 0.290/1000;           <span class="comment">% Distance between element centers</span>
+kerf = 0.025/1000;          <span class="comment">% Width of fill material between the ceramic elements</span>
+element_width = pitch-kerf; <span class="comment">% Element width [m] (azimuth direction)</span>
+Rfocus = 60/1000;           <span class="comment">% Elevation lens focus (or radius of curvature, ROC)</span>
+focus = [0 0 60]/1000;      <span class="comment">% Fixed emitter focal point [m] (irrelevant for single element transducer)</span>
+N_elements = 64;            <span class="comment">% Number of physical elements in array</span>
+N_sub_x = 5;                <span class="comment">% Element sub division in x-direction</span>
+N_sub_y = 30;               <span class="comment">% Element subdivision in y-direction</span>
+</pre><h2 id="4">GENERATE TRANSMIT APERTURE</h2><pre class="codeinput">emit_aperture = xdc_focused_array (N_elements, element_width, element_height, kerf, Rfocus, N_sub_x, N_sub_y, focus);
+eval(<span class="string">'close(1)'</span>,<span class="string">'1;'</span>)
+figure(1)
+show_xdc_geir(emit_aperture, 1);
+axis <span class="string">equal</span>; view(3)
+h_txAp = gcf;
+</pre><pre class="codeoutput">Read rectangular data for plotting....
+Plots aperture with physical element number...
+</pre><img vspace="5" hspace="5" src="Ex2_3_01.png" alt=""> <h2 id="5">SET THE IMPULSE RESPONSE AND EXCITATION OF THE TRANSMIT APERTURE</h2><pre class="codeinput">t_ir = -2/f0:1/fs:2/f0;
+Bw = 0.6;
+impulse_response=gauspuls(t_ir,f0,Bw);
+set_sampling(fs);
+xdc_impulse (emit_aperture, impulse_response);
+
+ex_periods = 1.5;
+t_ex=(0:1/fs:ex_periods/f0);
+excitation=square(2*pi*f0*t_ex);
+xdc_excitation (emit_aperture, excitation);
+
+figure(2);
+subplot(211);plot(t_ex*1e6, excitation);ylim([-1.1 1.1]);
+title(<span class="string">'Excitation'</span>); xlabel(<span class="string">'Time [\mus]'</span>);ylabel(<span class="string">'Amplitude'</span>);
+subplot(212);plot(t_ir*1e6, impulse_response);ylim([-1.1 1.1]);
+title(<span class="string">'Transducer impulse response'</span>); xlabel(<span class="string">'Time [\mus]'</span>);ylabel(<span class="string">'Amplitude'</span>);
+
+figure(3);
+freqz(impulse_response, 1, 1024, fs)
+</pre><pre class="codeoutput">Warning:  Remember to set all pulses in apertures for the new sampling frequency
+</pre><img vspace="5" hspace="5" src="Ex2_3_02.png" alt=""> <img vspace="5" hspace="5" src="Ex2_3_03.png" alt=""> <h2 id="6">DEFINE MEASUREMENT POINTS</h2><pre class="codeinput">measDepth = 60/1000;    <span class="comment">% Depth  along z-axis to place measurement points</span>
+xStart = -20/1000;      <span class="comment">% Start position of measurement points in x direction</span>
+xEnd = 20/1000;         <span class="comment">% End position of measurement points in x direction</span>
+Nmp = 101;
+
+mx = linspace(xStart,xEnd,Nmp)';
+my = zeros(Nmp, 1);
+mz = measDepth*ones(Nmp,1);
+measurement_points = [mx,my,mz];
+figure(h_txAp);
+hold <span class="string">on</span>;
+plot3(measurement_points(:,1)*1000,measurement_points(:,2)*1000,measurement_points(:,3)*1000, <span class="string">'o'</span>, <span class="string">'linewidth'</span>, 6)
+axis <span class="string">tight</span>
+</pre><img vspace="5" hspace="5" src="Ex2_3_04.png" alt=""> <h2 id="7">CALCULATE SPATIAL IMPULSE RESPONSE AND TRANSMIT PRESSURE</h2><pre class="codeinput">[spatImpResp_tx, startTime_tx] = calc_h(emit_aperture, measurement_points);
+[pressure_tx, startTime_tx] = calc_hp(emit_aperture, measurement_points);
+</pre><h2 id="8">PLOT RESULTS</h2><pre class="codeinput">figure(4);
+tAxh = startTime_tx + (0:size(spatImpResp_tx,1)-1)/fs;
+imagesc(mx*1000, tAxh*1e6, spatImpResp_tx);
+title(sprintf(<span class="string">'Spatial impulse response at  depth =%0.3gmm'</span>, measDepth*1000));
+xlabel(<span class="string">'Azimuth position [mm]'</span>);
+ylabel(<span class="string">'Time [us]'</span>);
+cmap = jet(256);
+cmap(1,:) = [0,0,0];
+colormap(cmap);
+axis <span class="string">tight</span>
+
+figure(5);
+tAxhp = startTime_tx + (0:length(pressure_tx)-1)/fs;
+imagesc(mx*1000, tAxh*1e6, pressure_tx);
+title(sprintf(<span class="string">'Transmit pressure field at depth =%0.3gmm'</span>, measDepth*1000))
+xlabel(<span class="string">'Azimuth position [mm]'</span>);
+ylabel(<span class="string">'Time [us]'</span>);
+colormap(gray(256));
+axis <span class="string">tight</span>
+
+figure(6)
+bpx = sqrt(mean(pressure_tx.^2));
+bpx=bpx/max(bpx);
+plot(mx*1000, bpx);
+title(sprintf(<span class="string">'Beamprofile at depth =%0.3gmm'</span>, measDepth*1000))
+xlabel(<span class="string">'Azimuth position [mm]'</span>);
+
+
+<span class="comment">% Plot the Fraunhofer/Fresnel derived pressure field (sinc)</span>
+<span class="keyword">if</span> measDepth==focus(3)
+    aTx = pitch*N_elements-kerf;
+    F = focus(3);
+    bpx_f = sinc(mx/F*aTx/c*f0);
+    hold <span class="string">on</span>;
+    plot(mx*1000, abs(bpx_f),<span class="string">'r'</span>);
+<span class="keyword">end</span>
+
+legend(<span class="string">'Simulated'</span>, <span class="string">'FraunhoferFresnel'</span>);
+</pre><img vspace="5" hspace="5" src="Ex2_3_05.png" alt=""> <img vspace="5" hspace="5" src="Ex2_3_06.png" alt=""> <img vspace="5" hspace="5" src="Ex2_3_07.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+% Eksempel p� enkelt fasestyrt array i Field II
+
+%% make sure that field_init has been called 
+eval('field_init(0)','1;')
+
+%% DEFINE ARRAY 
+c = 1540;                   % Speed of sound
+f0 = 2.5e6;                 % Transducer center frequency [Hz]
+fs = 100e6;                 % Sampling frequency [Hz]
+lambda = c/f0;              % Wavelength
+element_height = 13/1000;   % Height of element [m] (elevation direction)
+pitch = 0.290/1000;           % Distance between element centers
+kerf = 0.025/1000;          % Width of fill material between the ceramic elements
+element_width = pitch-kerf; % Element width [m] (azimuth direction)
+Rfocus = 60/1000;           % Elevation lens focus (or radius of curvature, ROC) 
+focus = [0 0 60]/1000;      % Fixed emitter focal point [m] (irrelevant for single element transducer)
+N_elements = 64;            % Number of physical elements in array
+N_sub_x = 5;                % Element sub division in x-direction
+N_sub_y = 30;               % Element subdivision in y-direction
+
+%% GENERATE TRANSMIT APERTURE 
+emit_aperture = xdc_focused_array (N_elements, element_width, element_height, kerf, Rfocus, N_sub_x, N_sub_y, focus);
+eval('close(1)','1;')
+figure(1)
+show_xdc_geir(emit_aperture, 1); 
+axis equal; view(3)
+h_txAp = gcf;
+
+%% SET THE IMPULSE RESPONSE AND EXCITATION OF THE TRANSMIT APERTURE 
+t_ir = -2/f0:1/fs:2/f0;
+Bw = 0.6;
+impulse_response=gauspuls(t_ir,f0,Bw);
+set_sampling(fs);
+xdc_impulse (emit_aperture, impulse_response);
+
+ex_periods = 1.5;
+t_ex=(0:1/fs:ex_periods/f0);
+excitation=square(2*pi*f0*t_ex);
+xdc_excitation (emit_aperture, excitation);
+
+figure(2); 
+subplot(211);plot(t_ex*1e6, excitation);ylim([-1.1 1.1]); 
+title('Excitation'); xlabel('Time [\mus]');ylabel('Amplitude');
+subplot(212);plot(t_ir*1e6, impulse_response);ylim([-1.1 1.1]);
+title('Transducer impulse response'); xlabel('Time [\mus]');ylabel('Amplitude');
+
+figure(3);
+freqz(impulse_response, 1, 1024, fs)
+
+
+%% DEFINE MEASUREMENT POINTS
+measDepth = 60/1000;    % Depth  along z-axis to place measurement points
+xStart = -20/1000;      % Start position of measurement points in x direction
+xEnd = 20/1000;         % End position of measurement points in x direction
+Nmp = 101;
+
+mx = linspace(xStart,xEnd,Nmp)';
+my = zeros(Nmp, 1);
+mz = measDepth*ones(Nmp,1);
+measurement_points = [mx,my,mz];
+figure(h_txAp); 
+hold on; 
+plot3(measurement_points(:,1)*1000,measurement_points(:,2)*1000,measurement_points(:,3)*1000, 'o', 'linewidth', 6)
+axis tight
+
+%% CALCULATE SPATIAL IMPULSE RESPONSE AND TRANSMIT PRESSURE
+[spatImpResp_tx, startTime_tx] = calc_h(emit_aperture, measurement_points);
+[pressure_tx, startTime_tx] = calc_hp(emit_aperture, measurement_points);
+
+%% PLOT RESULTS
+figure(4);
+tAxh = startTime_tx + (0:size(spatImpResp_tx,1)-1)/fs;
+imagesc(mx*1000, tAxh*1e6, spatImpResp_tx);
+title(sprintf('Spatial impulse response at  depth =%0.3gmm', measDepth*1000));
+xlabel('Azimuth position [mm]');
+ylabel('Time [us]'); 
+cmap = jet(256);
+cmap(1,:) = [0,0,0];
+colormap(cmap);
+axis tight
+
+figure(5);
+tAxhp = startTime_tx + (0:length(pressure_tx)-1)/fs;
+imagesc(mx*1000, tAxh*1e6, pressure_tx);
+title(sprintf('Transmit pressure field at depth =%0.3gmm', measDepth*1000))
+xlabel('Azimuth position [mm]');
+ylabel('Time [us]'); 
+colormap(gray(256));
+axis tight
+
+figure(6)
+bpx = sqrt(mean(pressure_tx.^2));
+bpx=bpx/max(bpx);
+plot(mx*1000, bpx);
+title(sprintf('Beamprofile at depth =%0.3gmm', measDepth*1000))
+xlabel('Azimuth position [mm]');
+
+
+% Plot the Fraunhofer/Fresnel derived pressure field (sinc)
+if measDepth==focus(3)
+    aTx = pitch*N_elements-kerf;
+    F = focus(3);
+    bpx_f = sinc(mx/F*aTx/c*f0);
+    hold on;
+    plot(mx*1000, abs(bpx_f),'r');
+end
+
+legend('Simulated', 'FraunhoferFresnel');
+##### SOURCE END #####
+--></body></html>

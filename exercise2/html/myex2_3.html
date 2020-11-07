@@ -1,0 +1,728 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>myex2_3</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-10-03"><meta name="DC.source" content="myex2_3.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Impulse setup</a></li><li><a href="#3">Impulse response from x=-20mm to x=20mm, depth 60mm</a></li><li><a href="#4">Spatial Impulse response from x=-20mm to x=20mm, depth 20mm</a></li><li><a href="#5">Spatial Impulse response from x=-20mm to x=20mm, depth 90mm</a></li><li><a href="#6">Pressure response from x=-20mm to x=20mm, depth 60mm</a></li><li><a href="#7">BEAM PROFILE</a></li><li><a href="#8">Pressure response from x=-20mm to x=20mm, depth 20mm</a></li><li><a href="#9">BEAM PROFILE</a></li><li><a href="#10">Pressure response from x=-20mm to x=20mm, depth 90mm</a></li><li><a href="#11">BEAM PROFILE</a></li><li><a href="#12">BEAM PROFILE at 20, 60, 90mm</a></li><li><a href="#13">fourier transform of aperature</a></li></ul></div><pre class="codeinput">close <span class="string">all</span>;
+clear <span class="string">all</span>;
+
+no_elements = 64;
+pitch = 0.29e-3;
+kerf = 0.025e-3;
+width = pitch - kerf;
+height=13e-3;
+no_sub_x = 5;
+no_sub_y = 30;
+focus = [0 0 60]/1000;
+Rfocus = 60e-3;
+field_init(0);
+
+Th = xdc_focused_array(no_elements, width, height, kerf, Rfocus, no_sub_x, no_sub_y, focus);
+<span class="comment">%figure;</span>
+<span class="comment">%show_xdc_geir(Th, 1);</span>
+<span class="comment">%</span>
+fs = 100e6; <span class="comment">%sampling freq (100Mhz)</span>
+f0 = 2.5e6; <span class="comment">% transducer center freq (2.5Mhz)</span>
+t0 = 1/f0;
+dt = 1/fs;  <span class="comment">%sampling period</span>
+set_sampling(fs);
+
+<span class="comment">% excitation = sin(2*pi*f0*(0:dt:1.5*t0));</span>
+<span class="comment">%</span>
+<span class="comment">% figure;</span>
+<span class="comment">% plot(0:dt:1.5*t0, excitation);</span>
+<span class="comment">% xlabel("time (s)");</span>
+<span class="comment">% title("excitation pulse");</span>
+<span class="comment">%</span>
+<span class="comment">% xdc_excitation(Th, excitation);</span>
+</pre><pre class="codeoutput">      *------------------------------------------------------------*
+      *                                                            *
+      *                      F I E L D   I I                       *
+      *                                                            *
+      *              Simulator for ultrasound systems              *
+      *                                                            *
+      *             Copyright by Joergen Arendt Jensen             *
+      *    Version 3.24, May 12, 2014 (Matlab 8.20 version)        *
+      *                  Web-site: field-ii.dk                     *
+      *                                                            *
+      *     This is citationware. Note the terms and conditions    *
+      *     for use on the web-site at:                            *
+      *               field-ii.dk/?copyright.html                  *
+      *  It is illegal to use this program, if the rules in the    *
+      *  copyright statement is not followed.                      *
+      *------------------------------------------------------------*
+Warning:  Remember to set all pulses in apertures for the new sampling frequency
+</pre><h2 id="2">Impulse setup</h2><pre class="codeinput">t_ir = -2/f0:1/fs:2/f0;
+Bw = 0.6;
+impulse_response = gauspuls(t_ir, f0, Bw);
+xdc_impulse (Th, impulse_response);
+figure;
+excitation = square(2*pi*f0*(0:dt:1.5*t0));
+plot(0:dt:1.5*t0, excitation);
+xlabel(<span class="string">"time (s)"</span>);
+title(<span class="string">"excitation pulse"</span>);
+xdc_excitation(Th, excitation);
+figure;
+plot(t_ir, impulse_response);
+xlabel(<span class="string">"time (s)"</span>);
+title(<span class="string">"impulse response"</span>);
+figure;
+freqz(impulse_response,1,1024,fs);
+</pre><img vspace="5" hspace="5" src="myex2_3_01.png" alt=""> <img vspace="5" hspace="5" src="myex2_3_02.png" alt=""> <img vspace="5" hspace="5" src="myex2_3_03.png" alt=""> <h2 id="3">Impulse response from x=-20mm to x=20mm, depth 60mm</h2><pre class="codeinput">N_Points = 101;
+x0=linspace(-20e-3,20e-3,N_Points);
+y0=linspace(0e-3,0e-3,N_Points);
+z0=linspace(60e-3,60e-3,N_Points);;
+measure_point=[x0', y0', z0'];
+figure;
+plot3(x0*1e3,y0*1e3,z0*1e3,<span class="string">'o'</span>, <span class="string">'linewidth'</span>, 6);
+axis <span class="string">tight</span>;
+xlabel(<span class="string">"x mm"</span>); ylabel(<span class="string">"y mm"</span>); zlabel(<span class="string">"z mm"</span>);
+
+
+[h_x0, t_start]=calc_h(Th, measure_point);
+figure;
+tAxhp = t_start+(0:length(h_x0)-1)*dt;
+
+<span class="comment">%plot(t_start+(0:length(h_x0)-1)*dt, h_x0(1));</span>
+imagesc(x0*1000, tAxhp*1e6, h_x0);
+xlabel(<span class="string">"x (mm)"</span>);
+ylabel(<span class="string">"t (us)"</span>);
+stitle = sprintf(<span class="string">"SIR at %2.2d~%2.2d mm, depth:%2.2dmm"</span>,min(x0),max(x0),min(z0));
+title(stitle);
+cmap = jet(256);
+cmap(1,:)=[0 0 0];
+colormap(cmap);
+</pre><img vspace="5" hspace="5" src="myex2_3_04.png" alt=""> <img vspace="5" hspace="5" src="myex2_3_05.png" alt=""> <h2 id="4">Spatial Impulse response from x=-20mm to x=20mm, depth 20mm</h2><pre class="codeinput">N_Points = 101;
+x0=linspace(-20e-3,20e-3,N_Points);
+y0=linspace(0e-3,0e-3,N_Points);
+z0=linspace(20e-3,20e-3,N_Points);;
+measure_point=[x0', y0', z0'];
+<span class="comment">% figure;</span>
+<span class="comment">% plot3(x0*1e3,y0*1e3,z0*1e3,'o', 'linewidth', 6);</span>
+<span class="comment">% axis tight;</span>
+<span class="comment">% xlabel("x mm"); ylabel("y mm"); zlabel("z mm");</span>
+
+
+[h_x0, t_start]=calc_h(Th, measure_point);
+figure;
+tAxhp = t_start+(0:length(h_x0)-1)*dt;
+
+<span class="comment">%plot(t_start+(0:length(h_x0)-1)*dt, h_x0(1));</span>
+imagesc(x0*1000, tAxhp*1e6, h_x0);
+xlabel(<span class="string">"x (mm)"</span>);
+ylabel(<span class="string">"t (us)"</span>);
+stitle = sprintf(<span class="string">"SIR at %2.2d~%2.2d mm, depth:%2.2dmm"</span>,min(x0),max(x0),min(z0));
+title(stitle);
+cmap = jet(256);
+cmap(1,:)=[0 0 0];
+colormap(cmap);
+</pre><img vspace="5" hspace="5" src="myex2_3_06.png" alt=""> <h2 id="5">Spatial Impulse response from x=-20mm to x=20mm, depth 90mm</h2><pre class="codeinput">N_Points = 101;
+x0=linspace(-20e-3,20e-3,N_Points);
+y0=linspace(0e-3,0e-3,N_Points);
+z0=linspace(90e-3,90e-3,N_Points);;
+measure_point=[x0', y0', z0'];
+<span class="comment">% figure;</span>
+<span class="comment">% plot3(x0*1e3,y0*1e3,z0*1e3,'o', 'linewidth', 6);</span>
+<span class="comment">% axis tight;</span>
+<span class="comment">% xlabel("x mm"); ylabel("y mm"); zlabel("z mm");</span>
+
+
+[h_x0, t_start]=calc_h(Th, measure_point);
+
+figure;
+tAxhp = t_start+(0:length(h_x0)-1)*dt;
+
+<span class="comment">%plot(t_start+(0:length(h_x0)-1)*dt, h_x0(1));</span>
+imagesc(x0*1000, tAxhp*1e6, h_x0);
+xlabel(<span class="string">"x (mm)"</span>);
+ylabel(<span class="string">"t (us)"</span>);
+stitle = sprintf(<span class="string">"SIR at %2.2d~%2.2d mm, depth:%2.2dmm"</span>,min(x0),max(x0),min(z0));
+title(stitle);
+cmap = jet(256);
+cmap(1,:)=[0 0 0];
+colormap(cmap);
+</pre><img vspace="5" hspace="5" src="myex2_3_07.png" alt=""> <h2 id="6">Pressure response from x=-20mm to x=20mm, depth 60mm</h2><pre class="codeinput"><span class="comment">%define measurement point matrix from x=-20mm to x=20mm</span>
+N_Points = 101;
+x0=linspace(-20e-3,20e-3,N_Points);
+y0=linspace(0e-3,0e-3,N_Points);
+z0=linspace(60e-3,60e-3,N_Points);;
+measure_point=[x0', y0', z0'];
+
+[hp_x0, t_start]=calc_hp(Th, measure_point);
+figure;
+tAx_hp = t_start+(0:length(hp_x0)-1)/fs;
+
+<span class="comment">%plot(t_start+(0:length(h_x0)-1)*dt, h_x0(1));</span>
+imagesc(x0*1000, tAx_hp*1e6, hp_x0);
+xlabel(<span class="string">"x (mm)"</span>);
+ylabel(<span class="string">"t (us)"</span>);
+stitle = sprintf(<span class="string">"pressure at %2.2d~%2.2d mm, depth:%2.2dmm"</span>,min(x0),max(x0),min(z0));
+title(stitle);
+cmap = gray(256);
+colormap(cmap);
+axis <span class="string">tight</span>;
+</pre><img vspace="5" hspace="5" src="myex2_3_08.png" alt=""> <h2 id="7">BEAM PROFILE</h2><pre class="codeinput">beamprofile = sqrt(mean(hp_x0.^2));
+beamprofile_60 = beamprofile;
+beampro = beamprofile/max(beamprofile);
+figure;
+plot(x0*1000,beampro);
+title(sprintf(<span class="string">'Beamprofile at depth =%0.3gmm'</span>, z0(1)*1000))
+xlabel(<span class="string">'Azimuth position [mm]'</span>);
+</pre><img vspace="5" hspace="5" src="myex2_3_09.png" alt=""> <h2 id="8">Pressure response from x=-20mm to x=20mm, depth 20mm</h2><pre class="codeinput"><span class="comment">%define measurement point matrix from x=-20mm to x=20mm</span>
+N_Points = 101;
+x0=linspace(-20e-3,20e-3,N_Points);
+y0=linspace(0e-3,0e-3,N_Points);
+z0=linspace(20e-3,20e-3,N_Points);;
+measure_point=[x0', y0', z0'];
+
+[hp_x0, t_start]=calc_hp(Th, measure_point);
+figure;
+tAx_hp = t_start+(0:length(hp_x0)-1)/fs;
+
+<span class="comment">%plot(t_start+(0:length(h_x0)-1)*dt, h_x0(1));</span>
+imagesc(x0*1000, tAx_hp*1e6, hp_x0);
+xlabel(<span class="string">"x (mm)"</span>);
+ylabel(<span class="string">"t (us)"</span>);
+stitle = sprintf(<span class="string">"pressure at %2.2d~%2.2d mm, depth:%2.2dmm"</span>,min(x0),max(x0),min(z0));
+title(stitle);
+cmap = gray(256);
+colormap(cmap);
+axis <span class="string">tight</span>;
+</pre><img vspace="5" hspace="5" src="myex2_3_10.png" alt=""> <h2 id="9">BEAM PROFILE</h2><pre class="codeinput">beamprofile = sqrt(mean(hp_x0.^2));
+beamprofile_20 = beamprofile;
+beampro = beamprofile/max(beamprofile);
+figure;
+plot(x0*1000,beampro);
+title(sprintf(<span class="string">'Beamprofile at depth =%0.3gmm'</span>, z0(1)*1000))
+xlabel(<span class="string">'Azimuth position [mm]'</span>);
+</pre><img vspace="5" hspace="5" src="myex2_3_11.png" alt=""> <h2 id="10">Pressure response from x=-20mm to x=20mm, depth 90mm</h2><pre class="codeinput"><span class="comment">%define measurement point matrix from x=-20mm to x=20mm</span>
+N_Points = 101;
+x0=linspace(-20e-3,20e-3,N_Points);
+y0=linspace(0e-3,0e-3,N_Points);
+z0=linspace(90e-3,90e-3,N_Points);;
+measure_point=[x0', y0', z0'];
+
+[hp_x0, t_start]=calc_hp(Th, measure_point);
+figure;
+tAx_hp = t_start+(0:length(hp_x0)-1)/fs;
+
+<span class="comment">%plot(t_start+(0:length(h_x0)-1)*dt, h_x0(1));</span>
+imagesc(x0*1000, tAx_hp*1e6, hp_x0);
+xlabel(<span class="string">"x (mm)"</span>);
+ylabel(<span class="string">"t (us)"</span>);
+stitle = sprintf(<span class="string">"pressure at %2.2d~%2.2d mm, depth:%2.2dmm"</span>,min(x0),max(x0),min(z0));
+title(stitle);
+cmap = gray(256);
+colormap(cmap);
+axis <span class="string">tight</span>;
+</pre><img vspace="5" hspace="5" src="myex2_3_12.png" alt=""> <h2 id="11">BEAM PROFILE</h2><pre class="codeinput">beamprofile = sqrt(mean(hp_x0.^2));
+beamprofile_90 = beamprofile;
+beampro = beamprofile/max(beamprofile);
+figure;
+plot(x0*1000,beampro);
+title(sprintf(<span class="string">'Beamprofile at depth =%0.3gmm'</span>, z0(1)*1000))
+xlabel(<span class="string">'Azimuth position [mm]'</span>);
+</pre><img vspace="5" hspace="5" src="myex2_3_13.png" alt=""> <h2 id="12">BEAM PROFILE at 20, 60, 90mm</h2><pre class="codeinput">beamprofile_all=[beamprofile_20 beamprofile_60 beamprofile_90];
+beampro = beamprofile_20/max(beamprofile_all);
+figure;
+plot(x0*1000,beampro);
+title(sprintf(<span class="string">'Beamprofile at depth =20,60,90mm'</span>));
+xlabel(<span class="string">'Azimuth position [mm]'</span>);
+
+beampro = beamprofile_60/max(beamprofile_all);
+hold <span class="string">on</span>;
+plot(x0*1000,beampro);
+
+beampro = beamprofile_90/max(beamprofile_all);
+hold <span class="string">on</span>;
+plot(x0*1000,beampro);
+</pre><img vspace="5" hspace="5" src="myex2_3_14.png" alt=""> <h2 id="13">fourier transform of aperature</h2><pre class="codeinput">aTx = no_elements*pitch - kerf;
+c = 1540;
+R = 60e-3;
+beampro_f = sinc(x0*aTx*f0/(R*c));
+hold <span class="string">on</span>;
+plot(x0*1000,beampro_f);
+legend(<span class="string">"20mm"</span>,<span class="string">"60mm"</span>,<span class="string">"90mm"</span>,<span class="string">"aperature fourier"</span>);
+
+<span class="comment">%</span>
+<span class="comment">% %define a measurement point</span>
+<span class="comment">% x0=20e-3;</span>
+<span class="comment">% y0=0e-3;</span>
+<span class="comment">% z0=60e-3;</span>
+<span class="comment">% measure_point=[x0 y0 z0];</span>
+<span class="comment">% [h_x0, t_start]=calc_h(Th, measure_point);</span>
+<span class="comment">% figure;</span>
+<span class="comment">% plot(t_start+(0:length(h_x0)-1)*dt, h_x0);</span>
+<span class="comment">% xlabel("time (s)");</span>
+<span class="comment">% stitle = sprintf("spatial impulse response at (%2.2d %2.2d %2.2d)", measure_point);</span>
+<span class="comment">% title(stitle);</span>
+<span class="comment">%</span>
+<span class="comment">% %sub problem4</span>
+<span class="comment">% %define a measurement point</span>
+<span class="comment">% x0=20e-3;</span>
+<span class="comment">% y0=10e-3;</span>
+<span class="comment">% z0=60e-3;</span>
+<span class="comment">% measure_point=[x0 y0 z0];</span>
+<span class="comment">% [h_x0, t_start]=calc_h(Th, measure_point);</span>
+<span class="comment">% figure;</span>
+<span class="comment">% plot(t_start+(0:length(h_x0)-1)*dt, h_x0);</span>
+<span class="comment">% xlabel("time (s)");</span>
+<span class="comment">% stitle = sprintf("spatial impulse response at (%2.2d %2.2d %2.2d)", measure_point);</span>
+<span class="comment">% title(stitle);</span>
+
+<span class="comment">%</span>
+<span class="comment">% %sub problem3</span>
+<span class="comment">% no_elements = 1;</span>
+<span class="comment">% width=18.5e-3;</span>
+<span class="comment">% height=13e-3;</span>
+<span class="comment">% kerf = 0;</span>
+<span class="comment">% no_sub_x = 30;</span>
+<span class="comment">% no_sub_y = 30;</span>
+<span class="comment">% focus = [0 0 60]/1000;</span>
+<span class="comment">%</span>
+<span class="comment">% Th = xdc_linear_array(no_elements, width, height, kerf, no_sub_x, no_sub_y, focus);</span>
+<span class="comment">% figure;</span>
+<span class="comment">% show_xdc_geir(Th, 1);</span>
+<span class="comment">%</span>
+<span class="comment">% fs = 100e6; %sampling freq (100Mhz)</span>
+<span class="comment">% set_sampling(fs);</span>
+<span class="comment">% f0 = 2.5e6; % transducer center freq (2.5Mhz)</span>
+<span class="comment">% t0 = 1/f0;</span>
+<span class="comment">% dt = 1/fs;  %sampling period</span>
+<span class="comment">% excitation = sin(2*pi*f0*(0:dt:1.5*t0));</span>
+<span class="comment">%</span>
+<span class="comment">% figure;</span>
+<span class="comment">% plot(0:dt:1.5*t0, excitation);</span>
+<span class="comment">% xlabel("time (s)");</span>
+<span class="comment">% title("excitation pulse");</span>
+<span class="comment">%</span>
+<span class="comment">% xdc_excitation(Th, excitation);</span>
+<span class="comment">%</span>
+<span class="comment">% t_ir = -2/f0:1/fs:2/f0;</span>
+<span class="comment">% Bw = 0.6;</span>
+<span class="comment">% impulse_response = gauspuls(t_ir, f0, Bw);</span>
+<span class="comment">% figure;</span>
+<span class="comment">% plot(t_ir, impulse_response);</span>
+<span class="comment">% xlabel("time (s)");</span>
+<span class="comment">% title("impulse response");</span>
+<span class="comment">%</span>
+<span class="comment">% freqz(impulse_response,1,1024,fs);</span>
+<span class="comment">%</span>
+<span class="comment">% %</span>
+<span class="comment">% %define a measurement point</span>
+<span class="comment">% x0=0e-3;</span>
+<span class="comment">% y0=0e-3;</span>
+<span class="comment">% z0=60e-3;</span>
+<span class="comment">% measure_point=[x0 y0 z0];</span>
+<span class="comment">% [h_x0, t_start]=calc_h(Th, measure_point);</span>
+<span class="comment">% figure;</span>
+<span class="comment">% plot(t_start+(0:length(h_x0)-1)*dt, h_x0);</span>
+<span class="comment">% xlabel("time (s)");</span>
+<span class="comment">% stitle = sprintf("spatial impulse response at (%2.2d %2.2d %2.2d)", measure_point);</span>
+<span class="comment">% title(stitle);</span>
+</pre><img vspace="5" hspace="5" src="myex2_3_15.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+close all;
+clear all;
+
+no_elements = 64;
+pitch = 0.29e-3;
+kerf = 0.025e-3;
+width = pitch - kerf;
+height=13e-3;
+no_sub_x = 5;
+no_sub_y = 30;
+focus = [0 0 60]/1000;
+Rfocus = 60e-3;
+field_init(0);
+
+Th = xdc_focused_array(no_elements, width, height, kerf, Rfocus, no_sub_x, no_sub_y, focus);
+%figure;
+%show_xdc_geir(Th, 1);
+% 
+fs = 100e6; %sampling freq (100Mhz)
+f0 = 2.5e6; % transducer center freq (2.5Mhz)
+t0 = 1/f0; 
+dt = 1/fs;  %sampling period
+set_sampling(fs);
+
+% excitation = sin(2*pi*f0*(0:dt:1.5*t0));
+% 
+% figure;
+% plot(0:dt:1.5*t0, excitation);
+% xlabel("time (s)");
+% title("excitation pulse");
+% 
+% xdc_excitation(Th, excitation);
+
+%% Impulse setup
+t_ir = -2/f0:1/fs:2/f0;
+Bw = 0.6;
+impulse_response = gauspuls(t_ir, f0, Bw);
+xdc_impulse (Th, impulse_response);
+figure;
+excitation = square(2*pi*f0*(0:dt:1.5*t0));
+plot(0:dt:1.5*t0, excitation);
+xlabel("time (s)");
+title("excitation pulse");
+xdc_excitation(Th, excitation);
+figure;
+plot(t_ir, impulse_response);
+xlabel("time (s)");
+title("impulse response");
+figure;
+freqz(impulse_response,1,1024,fs);
+
+%% Impulse response from x=-20mm to x=20mm, depth 60mm
+N_Points = 101;
+x0=linspace(-20e-3,20e-3,N_Points);
+y0=linspace(0e-3,0e-3,N_Points);
+z0=linspace(60e-3,60e-3,N_Points);;
+measure_point=[x0', y0', z0'];
+figure;
+plot3(x0*1e3,y0*1e3,z0*1e3,'o', 'linewidth', 6);
+axis tight;
+xlabel("x mm"); ylabel("y mm"); zlabel("z mm");
+
+
+[h_x0, t_start]=calc_h(Th, measure_point);
+figure;
+tAxhp = t_start+(0:length(h_x0)-1)*dt;
+
+%plot(t_start+(0:length(h_x0)-1)*dt, h_x0(1));
+imagesc(x0*1000, tAxhp*1e6, h_x0);
+xlabel("x (mm)");
+ylabel("t (us)");
+stitle = sprintf("SIR at %2.2d~%2.2d mm, depth:%2.2dmm",min(x0),max(x0),min(z0));
+title(stitle);
+cmap = jet(256);
+cmap(1,:)=[0 0 0];
+colormap(cmap);
+
+
+%% Spatial Impulse response from x=-20mm to x=20mm, depth 20mm
+
+N_Points = 101;
+x0=linspace(-20e-3,20e-3,N_Points);
+y0=linspace(0e-3,0e-3,N_Points);
+z0=linspace(20e-3,20e-3,N_Points);;
+measure_point=[x0', y0', z0'];
+% figure;
+% plot3(x0*1e3,y0*1e3,z0*1e3,'o', 'linewidth', 6);
+% axis tight;
+% xlabel("x mm"); ylabel("y mm"); zlabel("z mm");
+
+
+[h_x0, t_start]=calc_h(Th, measure_point);
+figure;
+tAxhp = t_start+(0:length(h_x0)-1)*dt;
+
+%plot(t_start+(0:length(h_x0)-1)*dt, h_x0(1));
+imagesc(x0*1000, tAxhp*1e6, h_x0);
+xlabel("x (mm)");
+ylabel("t (us)");
+stitle = sprintf("SIR at %2.2d~%2.2d mm, depth:%2.2dmm",min(x0),max(x0),min(z0));
+title(stitle);
+cmap = jet(256);
+cmap(1,:)=[0 0 0];
+colormap(cmap);
+
+
+%% Spatial Impulse response from x=-20mm to x=20mm, depth 90mm
+N_Points = 101;
+x0=linspace(-20e-3,20e-3,N_Points);
+y0=linspace(0e-3,0e-3,N_Points);
+z0=linspace(90e-3,90e-3,N_Points);;
+measure_point=[x0', y0', z0'];
+% figure;
+% plot3(x0*1e3,y0*1e3,z0*1e3,'o', 'linewidth', 6);
+% axis tight;
+% xlabel("x mm"); ylabel("y mm"); zlabel("z mm");
+
+
+[h_x0, t_start]=calc_h(Th, measure_point);
+
+figure;
+tAxhp = t_start+(0:length(h_x0)-1)*dt;
+
+%plot(t_start+(0:length(h_x0)-1)*dt, h_x0(1));
+imagesc(x0*1000, tAxhp*1e6, h_x0);
+xlabel("x (mm)");
+ylabel("t (us)");
+stitle = sprintf("SIR at %2.2d~%2.2d mm, depth:%2.2dmm",min(x0),max(x0),min(z0));
+title(stitle);
+cmap = jet(256);
+cmap(1,:)=[0 0 0];
+colormap(cmap);
+
+
+%% Pressure response from x=-20mm to x=20mm, depth 60mm
+
+%define measurement point matrix from x=-20mm to x=20mm
+N_Points = 101;
+x0=linspace(-20e-3,20e-3,N_Points);
+y0=linspace(0e-3,0e-3,N_Points);
+z0=linspace(60e-3,60e-3,N_Points);;
+measure_point=[x0', y0', z0'];
+
+[hp_x0, t_start]=calc_hp(Th, measure_point);
+figure;
+tAx_hp = t_start+(0:length(hp_x0)-1)/fs;
+
+%plot(t_start+(0:length(h_x0)-1)*dt, h_x0(1));
+imagesc(x0*1000, tAx_hp*1e6, hp_x0);
+xlabel("x (mm)");
+ylabel("t (us)");
+stitle = sprintf("pressure at %2.2d~%2.2d mm, depth:%2.2dmm",min(x0),max(x0),min(z0));
+title(stitle);
+cmap = gray(256);
+colormap(cmap);
+axis tight;
+
+%% BEAM PROFILE
+beamprofile = sqrt(mean(hp_x0.^2));
+beamprofile_60 = beamprofile;
+beampro = beamprofile/max(beamprofile);
+figure;
+plot(x0*1000,beampro);
+title(sprintf('Beamprofile at depth =%0.3gmm', z0(1)*1000))
+xlabel('Azimuth position [mm]');
+
+
+%% Pressure response from x=-20mm to x=20mm, depth 20mm
+
+%define measurement point matrix from x=-20mm to x=20mm
+N_Points = 101;
+x0=linspace(-20e-3,20e-3,N_Points);
+y0=linspace(0e-3,0e-3,N_Points);
+z0=linspace(20e-3,20e-3,N_Points);;
+measure_point=[x0', y0', z0'];
+
+[hp_x0, t_start]=calc_hp(Th, measure_point);
+figure;
+tAx_hp = t_start+(0:length(hp_x0)-1)/fs;
+
+%plot(t_start+(0:length(h_x0)-1)*dt, h_x0(1));
+imagesc(x0*1000, tAx_hp*1e6, hp_x0);
+xlabel("x (mm)");
+ylabel("t (us)");
+stitle = sprintf("pressure at %2.2d~%2.2d mm, depth:%2.2dmm",min(x0),max(x0),min(z0));
+title(stitle);
+cmap = gray(256);
+colormap(cmap);
+axis tight;
+
+%% BEAM PROFILE
+beamprofile = sqrt(mean(hp_x0.^2));
+beamprofile_20 = beamprofile;
+beampro = beamprofile/max(beamprofile);
+figure;
+plot(x0*1000,beampro);
+title(sprintf('Beamprofile at depth =%0.3gmm', z0(1)*1000))
+xlabel('Azimuth position [mm]');
+
+
+%% Pressure response from x=-20mm to x=20mm, depth 90mm
+
+%define measurement point matrix from x=-20mm to x=20mm
+N_Points = 101;
+x0=linspace(-20e-3,20e-3,N_Points);
+y0=linspace(0e-3,0e-3,N_Points);
+z0=linspace(90e-3,90e-3,N_Points);;
+measure_point=[x0', y0', z0'];
+
+[hp_x0, t_start]=calc_hp(Th, measure_point);
+figure;
+tAx_hp = t_start+(0:length(hp_x0)-1)/fs;
+
+%plot(t_start+(0:length(h_x0)-1)*dt, h_x0(1));
+imagesc(x0*1000, tAx_hp*1e6, hp_x0);
+xlabel("x (mm)");
+ylabel("t (us)");
+stitle = sprintf("pressure at %2.2d~%2.2d mm, depth:%2.2dmm",min(x0),max(x0),min(z0));
+title(stitle);
+cmap = gray(256);
+colormap(cmap);
+axis tight;
+
+%% BEAM PROFILE
+beamprofile = sqrt(mean(hp_x0.^2));
+beamprofile_90 = beamprofile;
+beampro = beamprofile/max(beamprofile);
+figure;
+plot(x0*1000,beampro);
+title(sprintf('Beamprofile at depth =%0.3gmm', z0(1)*1000))
+xlabel('Azimuth position [mm]');
+
+
+%% BEAM PROFILE at 20, 60, 90mm
+beamprofile_all=[beamprofile_20 beamprofile_60 beamprofile_90];
+beampro = beamprofile_20/max(beamprofile_all);
+figure;
+plot(x0*1000,beampro);
+title(sprintf('Beamprofile at depth =20,60,90mm'));
+xlabel('Azimuth position [mm]');
+
+beampro = beamprofile_60/max(beamprofile_all);
+hold on;
+plot(x0*1000,beampro);
+
+beampro = beamprofile_90/max(beamprofile_all);
+hold on;
+plot(x0*1000,beampro);
+
+
+
+%% fourier transform of aperature
+aTx = no_elements*pitch - kerf;
+c = 1540;
+R = 60e-3;
+beampro_f = sinc(x0*aTx*f0/(R*c));
+hold on;
+plot(x0*1000,beampro_f);
+legend("20mm","60mm","90mm","aperature fourier");
+
+%
+% %define a measurement point
+% x0=20e-3;
+% y0=0e-3;
+% z0=60e-3;
+% measure_point=[x0 y0 z0];
+% [h_x0, t_start]=calc_h(Th, measure_point);
+% figure;
+% plot(t_start+(0:length(h_x0)-1)*dt, h_x0);
+% xlabel("time (s)");
+% stitle = sprintf("spatial impulse response at (%2.2d %2.2d %2.2d)", measure_point);
+% title(stitle);
+% 
+% %sub problem4
+% %define a measurement point
+% x0=20e-3;
+% y0=10e-3;
+% z0=60e-3;
+% measure_point=[x0 y0 z0];
+% [h_x0, t_start]=calc_h(Th, measure_point);
+% figure;
+% plot(t_start+(0:length(h_x0)-1)*dt, h_x0);
+% xlabel("time (s)");
+% stitle = sprintf("spatial impulse response at (%2.2d %2.2d %2.2d)", measure_point);
+% title(stitle);
+
+% 
+% %sub problem3
+% no_elements = 1;
+% width=18.5e-3;
+% height=13e-3;
+% kerf = 0;
+% no_sub_x = 30;
+% no_sub_y = 30;
+% focus = [0 0 60]/1000;
+% 
+% Th = xdc_linear_array(no_elements, width, height, kerf, no_sub_x, no_sub_y, focus);
+% figure;
+% show_xdc_geir(Th, 1);
+% 
+% fs = 100e6; %sampling freq (100Mhz)
+% set_sampling(fs);
+% f0 = 2.5e6; % transducer center freq (2.5Mhz)
+% t0 = 1/f0; 
+% dt = 1/fs;  %sampling period
+% excitation = sin(2*pi*f0*(0:dt:1.5*t0));
+% 
+% figure;
+% plot(0:dt:1.5*t0, excitation);
+% xlabel("time (s)");
+% title("excitation pulse");
+% 
+% xdc_excitation(Th, excitation);
+% 
+% t_ir = -2/f0:1/fs:2/f0;
+% Bw = 0.6;
+% impulse_response = gauspuls(t_ir, f0, Bw);
+% figure;
+% plot(t_ir, impulse_response);
+% xlabel("time (s)");
+% title("impulse response");
+% 
+% freqz(impulse_response,1,1024,fs);
+% 
+% %
+% %define a measurement point
+% x0=0e-3;
+% y0=0e-3;
+% z0=60e-3;
+% measure_point=[x0 y0 z0];
+% [h_x0, t_start]=calc_h(Th, measure_point);
+% figure;
+% plot(t_start+(0:length(h_x0)-1)*dt, h_x0);
+% xlabel("time (s)");
+% stitle = sprintf("spatial impulse response at (%2.2d %2.2d %2.2d)", measure_point);
+% title(stitle);
+
+
+
+##### SOURCE END #####
+--></body></html>

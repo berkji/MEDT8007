@@ -1,0 +1,371 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Ex2_8</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-10-11"><meta name="DC.source" content="Ex2_8.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">make sure that field_init has been called</a></li><li><a href="#2">DEFINE ARRAY</a></li><li><a href="#3">GENERATE TRANSMIT AND RECEIVE APERTURE</a></li><li><a href="#4">SET THE IMPULSE RESPONSE AND EXCITATION OF THE TRANSMIT AND RECEIVE APERTURE</a></li><li><a href="#5">SET THE EXCITATION OF THE TRANSMIT APERTURE</a></li><li><a href="#6">DEFINE APODIZATION FOR THE EMIT APERTURE</a></li><li><a href="#7">DEFINE APODIZATION FOR THE RECEIVE APERTURE</a></li><li><a href="#8">DEFINE MEASUREMENT POINTS</a></li><li><a href="#9">CALCULATE PRESSURE OR SENSITIVITY</a></li><li><a href="#10">PLOT RESULTS</a></li><li><a href="#11">PLOT BP NORMALIZED AT EACH DEPTH</a></li></ul></div><h2 id="1">make sure that field_init has been called</h2><pre class="codeinput">eval(<span class="string">'field_init(0)'</span>,<span class="string">'1;'</span>)
+</pre><pre class="codeoutput">      *------------------------------------------------------------*
+      *                                                            *
+      *                      F I E L D   I I                       *
+      *                                                            *
+      *              Simulator for ultrasound systems              *
+      *                                                            *
+      *             Copyright by Joergen Arendt Jensen             *
+      *    Version 3.24, May 12, 2014 (Matlab 8.20 version)        *
+      *                  Web-site: field-ii.dk                     *
+      *                                                            *
+      *     This is citationware. Note the terms and conditions    *
+      *     for use on the web-site at:                            *
+      *               field-ii.dk/?copyright.html                  *
+      *  It is illegal to use this program, if the rules in the    *
+      *  copyright statement is not followed.                      *
+      *------------------------------------------------------------*
+</pre><h2 id="2">DEFINE ARRAY</h2><pre class="codeinput">c = 1540;                   <span class="comment">% Speed of sound</span>
+f0 = 2.5e6;                 <span class="comment">% Transducer center frequency [Hz]</span>
+fs = 50e6;                 <span class="comment">% Sampling frequency [Hz]</span>
+lambda = c/f0;              <span class="comment">% Wavelength</span>
+element_height = 13/1000;   <span class="comment">% Height of element [m] (elevation direction)</span>
+pitch = 0.290/1000;         <span class="comment">% Distance between element centers</span>
+kerf = 0.025/1000;          <span class="comment">% Width of fill material between the ceramic elements</span>
+element_width = pitch-kerf; <span class="comment">% Element width [m] (azimuth direction)</span>
+Rfocus = 60/1000;           <span class="comment">% Elevation lens focus (or radius of curvature, ROC)</span>
+focus = [0 0 60]/1000;      <span class="comment">% Fixed emitter focal point [m] (irrelevant for single element transducer)</span>
+N_elements = 64;            <span class="comment">% Number of physical elements in array</span>
+N_sub_x = 5;                <span class="comment">% Element sub division in x-direction</span>
+N_sub_y = 15;               <span class="comment">% Element subdivision in y-direction</span>
+apodTx = 0;                 <span class="comment">% Transmit apodization. 0:boxcar, 1:Hanning, 2:Cosine-tapered 0.3</span>
+apodRx = 0;                 <span class="comment">% Receive apodization. 0:boxcar, 1:Hanning, 2:Cosine-tapered 0.3</span>
+dynamic_receive_focus = 1;  <span class="comment">% Enable dynamic receive focusing.</span>
+simType = <span class="string">'txrx'</span>;             <span class="comment">% Simulation type. Transmit:'tx', receive:'rx', pulse-echo:'txrx'</span>
+</pre><h2 id="3">GENERATE TRANSMIT AND RECEIVE APERTURE</h2><pre class="codeinput">emit_aperture = xdc_focused_array (N_elements, element_width, element_height, kerf, Rfocus, N_sub_x, N_sub_y, focus);
+receive_aperture = xdc_focused_array (N_elements, element_width, element_height, kerf, Rfocus, N_sub_x, N_sub_y, focus);
+
+eval(<span class="string">'close(1)'</span>,<span class="string">'1;'</span>)
+<span class="comment">% figure(1)</span>
+<span class="comment">% show_xdc_geir(emit_aperture, 1);</span>
+<span class="comment">% axis equal; view(3)</span>
+<span class="comment">% h_txAp = gcf;</span>
+</pre><h2 id="4">SET THE IMPULSE RESPONSE AND EXCITATION OF THE TRANSMIT AND RECEIVE APERTURE</h2><pre class="codeinput">t_ir = -2/f0:1/fs:2/f0;
+Bw = 0.6;
+impulse_response=gauspuls(t_ir,f0,Bw);
+set_sampling(fs);
+xdc_impulse (emit_aperture, impulse_response);
+xdc_impulse (receive_aperture, impulse_response);
+</pre><pre class="codeoutput">Warning:  Remember to set all pulses in apertures for the new sampling frequency
+</pre><h2 id="5">SET THE EXCITATION OF THE TRANSMIT APERTURE</h2><pre class="codeinput">ex_periods = 1.5;
+t_ex=(0:1/fs:ex_periods/f0);
+excitation=square(2*pi*f0*t_ex);
+xdc_excitation (emit_aperture, excitation);
+</pre><h2 id="6">DEFINE APODIZATION FOR THE EMIT APERTURE</h2><pre class="codeinput"><span class="keyword">switch</span> apodTx
+    <span class="keyword">case</span> 0
+        apo_emit = ones(1,N_elements);   <span class="comment">% Rectangular apodization</span>
+    <span class="keyword">case</span> 1
+        apo_emit = hanning(N_elements)'; <span class="comment">% Hanning apodization on the emit-apperture</span>
+    <span class="keyword">case</span> 2
+        apo_emit = tukeywin(N_elements,  0.3)'; <span class="comment">% Cosine-tapered apodization</span>
+<span class="keyword">end</span>
+xdc_apodization(emit_aperture, 0, apo_emit);
+figure(2)
+subplot(211)
+stem(apo_emit);
+title(<span class="string">'Transmit apodization'</span>);
+xlabel(<span class="string">'Element index'</span>);
+ylabel(<span class="string">'Element amplitude weighting'</span>);
+axis <span class="string">tight</span>
+ylim([0 1]);
+</pre><img vspace="5" hspace="5" src="Ex2_8_01.png" alt=""> <h2 id="7">DEFINE APODIZATION FOR THE RECEIVE APERTURE</h2><pre class="codeinput"><span class="keyword">switch</span> apodRx
+    <span class="keyword">case</span> 0
+        apo_receive = ones(1,N_elements);   <span class="comment">% Rectangular apodization</span>
+    <span class="keyword">case</span> 1
+        apo_receive = hanning(N_elements)'; <span class="comment">% Hanning apodization on the emit-apperture</span>
+    <span class="keyword">case</span> 2
+        apo_receive = tukeywin(N_elements,  0.3)'; <span class="comment">% Cosine-tapered apodization</span>
+<span class="keyword">end</span>
+xdc_apodization(receive_aperture, 0, apo_receive);
+figure(2)
+subplot(212)
+stem(apo_receive);
+title(<span class="string">'Receive apodization'</span>);
+xlabel(<span class="string">'Element index'</span>);
+ylabel(<span class="string">'Element amplitude weighting'</span>);
+axis <span class="string">tight</span>
+ylim([0 1]);
+</pre><img vspace="5" hspace="5" src="Ex2_8_02.png" alt=""> <h2 id="8">DEFINE MEASUREMENT POINTS</h2><pre class="codeinput">measDepthStart = 5/1000;    <span class="comment">% Start depth along z-axis to place measurement points</span>
+measDepthEnd = 150/1000;    <span class="comment">% End depth along z-axis to place measurement points</span>
+xStart = -15/1000;      <span class="comment">% Start position of measurement points in x direction</span>
+xEnd = 15/1000;         <span class="comment">% End position of measurement points in x direction</span>
+
+Nmpx = 81;
+Nmpz = 59;
+mx = linspace(xStart,xEnd,Nmpx)';
+my = zeros(Nmpx*Nmpz, 1);
+mz = linspace(measDepthStart,measDepthEnd,Nmpz)';
+[X,Z] = meshgrid(mx,mz);
+measurement_points = [X(:),my,Z(:)];
+<span class="comment">% figure(h_txAp);</span>
+<span class="comment">% hold on;</span>
+<span class="comment">% plot3(measurement_points(:,1)*1000,measurement_points(:,2)*1000,measurement_points(:,3)*1000, 'o', 'linewidth', 6)</span>
+<span class="comment">% axis tight</span>
+</pre><h2 id="9">CALCULATE PRESSURE OR SENSITIVITY</h2><pre class="codeinput"><span class="keyword">switch</span> simType
+    <span class="keyword">case</span> <span class="string">'tx'</span>
+        disp(<span class="string">'Calculating transmit pressure'</span>);
+        [simData, startTime] = calc_hp(emit_aperture, measurement_points);
+        figTitle = <span class="string">'Transmit pressure field'</span>;
+    <span class="keyword">case</span> <span class="string">'rx'</span>
+        disp(<span class="string">'Calculating receive sensitivity'</span>);
+        <span class="keyword">if</span> dynamic_receive_focus
+            xdc_dynamic_focus(receive_aperture, 0, 0, 0)
+        <span class="keyword">end</span>
+        [simData, startTime] = calc_hp(receive_aperture, measurement_points);
+        figTitle = <span class="string">'Receive sensitivity'</span>;
+    <span class="keyword">case</span> <span class="string">'txrx'</span>
+        disp(<span class="string">'Calculating pulse-echo response'</span>);
+        <span class="keyword">if</span> dynamic_receive_focus
+            xdc_dynamic_focus(receive_aperture, 0, 0, 0)
+        <span class="keyword">end</span>
+        [simData, startTime] = calc_hhp(emit_aperture, receive_aperture, measurement_points);
+        figTitle = <span class="string">'Pulse-echo response'</span>;
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">Calculating pulse-echo response
+ 3 seconds used for the calculation                           
+</pre><h2 id="10">PLOT RESULTS</h2><pre class="codeinput">figure(4)
+bp = sqrt(mean(simData.^2));
+bp = reshape(bp, Nmpz, Nmpx);
+bp=bp/max(bp(:));
+pcolor(mx*1000, mz*1000, 20*log10(bp));
+shading <span class="string">interp</span>
+title(figTitle)
+xlabel(<span class="string">'Azimuth [mm]'</span>);
+ylabel(<span class="string">'Range [mm]'</span>);
+caxis([-35 0]); <span class="comment">% Set dynamic range</span>
+colormap(jet(256));
+colorbar
+</pre><img vspace="5" hspace="5" src="Ex2_8_03.png" alt=""> <h2 id="11">PLOT BP NORMALIZED AT EACH DEPTH</h2><pre class="codeinput">figure(5)
+bp= bp./repmat(max(bp')', 1,Nmpx);
+pcolor(mx*1000, mz*1000, 20*log10(bp));
+shading <span class="string">interp</span>
+title(figTitle)
+xlabel(<span class="string">'Azimuth [mm]'</span>);
+ylabel(<span class="string">'Range [mm]'</span>);
+caxis([-35 0]); <span class="comment">% Set dynamic range</span>
+colormap(jet(256));
+colorbar
+</pre><img vspace="5" hspace="5" src="Ex2_8_04.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% make sure that field_init has been called 
+eval('field_init(0)','1;')
+
+%% DEFINE ARRAY 
+c = 1540;                   % Speed of sound
+f0 = 2.5e6;                 % Transducer center frequency [Hz]
+fs = 50e6;                 % Sampling frequency [Hz]
+lambda = c/f0;              % Wavelength
+element_height = 13/1000;   % Height of element [m] (elevation direction)
+pitch = 0.290/1000;         % Distance between element centers
+kerf = 0.025/1000;          % Width of fill material between the ceramic elements
+element_width = pitch-kerf; % Element width [m] (azimuth direction)
+Rfocus = 60/1000;           % Elevation lens focus (or radius of curvature, ROC) 
+focus = [0 0 60]/1000;      % Fixed emitter focal point [m] (irrelevant for single element transducer)
+N_elements = 64;            % Number of physical elements in array
+N_sub_x = 5;                % Element sub division in x-direction
+N_sub_y = 15;               % Element subdivision in y-direction
+apodTx = 0;                 % Transmit apodization. 0:boxcar, 1:Hanning, 2:Cosine-tapered 0.3
+apodRx = 0;                 % Receive apodization. 0:boxcar, 1:Hanning, 2:Cosine-tapered 0.3
+dynamic_receive_focus = 1;  % Enable dynamic receive focusing.
+simType = 'txrx';             % Simulation type. Transmit:'tx', receive:'rx', pulse-echo:'txrx'
+
+%% GENERATE TRANSMIT AND RECEIVE APERTURE 
+emit_aperture = xdc_focused_array (N_elements, element_width, element_height, kerf, Rfocus, N_sub_x, N_sub_y, focus);
+receive_aperture = xdc_focused_array (N_elements, element_width, element_height, kerf, Rfocus, N_sub_x, N_sub_y, focus);
+
+eval('close(1)','1;')
+% figure(1)
+% show_xdc_geir(emit_aperture, 1); 
+% axis equal; view(3)
+% h_txAp = gcf;
+
+%% SET THE IMPULSE RESPONSE AND EXCITATION OF THE TRANSMIT AND RECEIVE APERTURE 
+t_ir = -2/f0:1/fs:2/f0;
+Bw = 0.6;
+impulse_response=gauspuls(t_ir,f0,Bw);
+set_sampling(fs);
+xdc_impulse (emit_aperture, impulse_response);
+xdc_impulse (receive_aperture, impulse_response);
+
+%% SET THE EXCITATION OF THE TRANSMIT APERTURE 
+ex_periods = 1.5;
+t_ex=(0:1/fs:ex_periods/f0);
+excitation=square(2*pi*f0*t_ex);
+xdc_excitation (emit_aperture, excitation);
+
+%% DEFINE APODIZATION FOR THE EMIT APERTURE 
+switch apodTx
+    case 0
+        apo_emit = ones(1,N_elements);   % Rectangular apodization
+    case 1
+        apo_emit = hanning(N_elements)'; % Hanning apodization on the emit-apperture
+    case 2
+        apo_emit = tukeywin(N_elements,  0.3)'; % Cosine-tapered apodization
+end
+xdc_apodization(emit_aperture, 0, apo_emit);
+figure(2)
+subplot(211)
+stem(apo_emit);
+title('Transmit apodization');
+xlabel('Element index');
+ylabel('Element amplitude weighting');
+axis tight
+ylim([0 1]);
+
+%% DEFINE APODIZATION FOR THE RECEIVE APERTURE 
+switch apodRx
+    case 0
+        apo_receive = ones(1,N_elements);   % Rectangular apodization
+    case 1
+        apo_receive = hanning(N_elements)'; % Hanning apodization on the emit-apperture
+    case 2
+        apo_receive = tukeywin(N_elements,  0.3)'; % Cosine-tapered apodization
+end
+xdc_apodization(receive_aperture, 0, apo_receive);
+figure(2)
+subplot(212)
+stem(apo_receive);
+title('Receive apodization');
+xlabel('Element index');
+ylabel('Element amplitude weighting');
+axis tight
+ylim([0 1]);
+
+
+%% DEFINE MEASUREMENT POINTS
+measDepthStart = 5/1000;    % Start depth along z-axis to place measurement points
+measDepthEnd = 150/1000;    % End depth along z-axis to place measurement points
+xStart = -15/1000;      % Start position of measurement points in x direction
+xEnd = 15/1000;         % End position of measurement points in x direction
+
+Nmpx = 81;
+Nmpz = 59;
+mx = linspace(xStart,xEnd,Nmpx)';
+my = zeros(Nmpx*Nmpz, 1);
+mz = linspace(measDepthStart,measDepthEnd,Nmpz)';
+[X,Z] = meshgrid(mx,mz);
+measurement_points = [X(:),my,Z(:)];
+% figure(h_txAp); 
+% hold on; 
+% plot3(measurement_points(:,1)*1000,measurement_points(:,2)*1000,measurement_points(:,3)*1000, 'o', 'linewidth', 6)
+% axis tight
+
+%% CALCULATE PRESSURE OR SENSITIVITY
+switch simType
+    case 'tx'
+        disp('Calculating transmit pressure');
+        [simData, startTime] = calc_hp(emit_aperture, measurement_points); 
+        figTitle = 'Transmit pressure field';
+    case 'rx'
+        disp('Calculating receive sensitivity');
+        if dynamic_receive_focus
+            xdc_dynamic_focus(receive_aperture, 0, 0, 0)
+        end
+        [simData, startTime] = calc_hp(receive_aperture, measurement_points);
+        figTitle = 'Receive sensitivity';
+    case 'txrx'
+        disp('Calculating pulse-echo response');
+        if dynamic_receive_focus
+            xdc_dynamic_focus(receive_aperture, 0, 0, 0)
+        end
+        [simData, startTime] = calc_hhp(emit_aperture, receive_aperture, measurement_points);
+        figTitle = 'Pulse-echo response';
+end
+        
+
+%% PLOT RESULTS
+figure(4)
+bp = sqrt(mean(simData.^2));
+bp = reshape(bp, Nmpz, Nmpx);
+bp=bp/max(bp(:));
+pcolor(mx*1000, mz*1000, 20*log10(bp));
+shading interp
+title(figTitle)
+xlabel('Azimuth [mm]');
+ylabel('Range [mm]');
+caxis([-35 0]); % Set dynamic range
+colormap(jet(256));
+colorbar
+
+%% PLOT BP NORMALIZED AT EACH DEPTH
+figure(5)
+bp= bp./repmat(max(bp')', 1,Nmpx);
+pcolor(mx*1000, mz*1000, 20*log10(bp));
+shading interp
+title(figTitle)
+xlabel('Azimuth [mm]');
+ylabel('Range [mm]');
+caxis([-35 0]); % Set dynamic range
+colormap(jet(256));
+colorbar
+
+##### SOURCE END #####
+--></body></html>

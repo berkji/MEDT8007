@@ -1,0 +1,286 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>myex2_6</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-10-07"><meta name="DC.source" content="myex2_6.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Impulse setup</a></li><li><a href="#3">setup tx Apod</a></li><li><a href="#4">pressure response from x=-15mm to x=15mm, depth 5~150mm</a></li></ul></div><pre class="codeinput">close <span class="string">all</span>;
+clear <span class="string">all</span>;
+
+no_elements = 128;
+pitch = 0.29e-3;
+kerf = 0.025e-3;
+width = pitch - kerf;
+height=13e-3;
+no_sub_x = 5;
+no_sub_y = 30;
+focus = [0 0 60]/1000;
+Rfocus = 60e-3;
+c =1540;
+
+field_init(0);
+
+Th = xdc_focused_array(no_elements, width, height, kerf, Rfocus, no_sub_x, no_sub_y, focus);
+figure;
+show_xdc_geir(Th, 1);
+axis <span class="string">equal</span>;
+view(3);
+
+<span class="comment">%</span>
+fs = 100e6; <span class="comment">%sampling freq (100Mhz)</span>
+f0 = 2.5e6; <span class="comment">% transducer center freq (2.5Mhz)</span>
+t0 = 1/f0;
+dt = 1/fs;  <span class="comment">%sampling period</span>
+set_sampling(fs);
+</pre><pre class="codeoutput">      *------------------------------------------------------------*
+      *                                                            *
+      *                      F I E L D   I I                       *
+      *                                                            *
+      *              Simulator for ultrasound systems              *
+      *                                                            *
+      *             Copyright by Joergen Arendt Jensen             *
+      *    Version 3.24, May 12, 2014 (Matlab 8.20 version)        *
+      *                  Web-site: field-ii.dk                     *
+      *                                                            *
+      *     This is citationware. Note the terms and conditions    *
+      *     for use on the web-site at:                            *
+      *               field-ii.dk/?copyright.html                  *
+      *  It is illegal to use this program, if the rules in the    *
+      *  copyright statement is not followed.                      *
+      *------------------------------------------------------------*
+Read rectangular data for plotting....
+Plots aperture with physical element number...
+Warning:  Remember to set all pulses in apertures for the new sampling frequency
+</pre><img vspace="5" hspace="5" src="myex2_6_01.png" alt=""> <h2 id="2">Impulse setup</h2><pre class="codeinput">t_ir = -2/f0:1/fs:2/f0;
+Bw = 0.6;
+impulse_response = gauspuls(t_ir, f0, Bw);
+xdc_impulse (Th, impulse_response);
+figure;
+excitation = square(2*pi*f0*(0:dt:1.5*t0));
+plot(0:dt:1.5*t0, excitation);
+xlabel(<span class="string">"time (s)"</span>);
+title(<span class="string">"excitation pulse"</span>);
+xdc_excitation(Th, excitation);
+figure;
+plot(t_ir, impulse_response);
+xlabel(<span class="string">"time (s)"</span>);
+title(<span class="string">"impulse response"</span>);
+figure;
+freqz(impulse_response,1,1024,fs);
+</pre><img vspace="5" hspace="5" src="myex2_6_02.png" alt=""> <img vspace="5" hspace="5" src="myex2_6_03.png" alt=""> <img vspace="5" hspace="5" src="myex2_6_04.png" alt=""> <h2 id="3">setup tx Apod</h2><pre class="codeinput"><span class="comment">%txApodWeights = ones(1, no_elements);</span>
+<span class="comment">%txApodWeights = hanning(no_elements)';</span>
+txApodWeights = tukeywin(no_elements, 0.3)';
+figure;
+stem(txApodWeights);
+xdc_apodization(Th, 0, txApodWeights);
+</pre><img vspace="5" hspace="5" src="myex2_6_05.png" alt=""> <h2 id="4">pressure response from x=-15mm to x=15mm, depth 5~150mm</h2><pre class="codeinput">Nx = 81; Nz = 59;
+x0=linspace(-25e-3,25e-3,Nx);
+z0=linspace( 5e-3,250e-3,Nz);
+[X,Z]=meshgrid(x0,z0);
+measure_point = [X(:), zeros(length(X(:)),1),Z(:)];
+[hp_x0, t_start]=calc_hp(Th, measure_point);
+figure;
+tAx_hp = t_start+(0:length(hp_x0)-1)/fs;
+rms_hp_x0 = rms(hp_x0);
+rms_hp_x0 = rms_hp_x0/max(rms_hp_x0);
+BPmatrix = reshape(rms_hp_x0,Nz,Nx);
+pcolor(x0*1000,z0*1000,20*log10(BPmatrix));
+shading <span class="string">interp</span>
+colorbar;
+caxis([-30 0]);
+xlabel(<span class="string">"x mm"</span>);
+ylabel(<span class="string">"z mm"</span>);
+title(<span class="string">"beam profile comparing to global maxmium"</span>);
+
+
+BPmatrix = rms(hp_x0);
+BPmatrix = reshape(BPmatrix,Nz,Nx);
+BPmatrix_s = max(BPmatrix');
+BPmatrix_n = min(BPmatrix');
+BPmatrix= BPmatrix./repmat(max(BPmatrix')', 1,Nx);
+SNR = BPmatrix_s./BPmatrix_n;
+figure;
+plot(z0*1000,SNR);
+xlabel(<span class="string">"depth (mm)"</span>);
+title(<span class="string">"SNR based on same depth SNR"</span>);
+
+figure;
+pcolor(x0*1000,z0*1000,20*log10(BPmatrix));
+shading <span class="string">interp</span>
+colorbar;
+caxis([-30 0]);
+xlabel(<span class="string">"x mm"</span>);
+ylabel(<span class="string">"z mm"</span>);
+title(<span class="string">"beam profile comparing to the same depth maxmium"</span>);
+</pre><pre class="codeoutput">  75.8 % performed (roughly  2 seconds remaining)                              7 seconds used for the calculation                           
+</pre><img vspace="5" hspace="5" src="myex2_6_06.png" alt=""> <img vspace="5" hspace="5" src="myex2_6_07.png" alt=""> <img vspace="5" hspace="5" src="myex2_6_08.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+close all;
+clear all;
+
+no_elements = 128;
+pitch = 0.29e-3;
+kerf = 0.025e-3;
+width = pitch - kerf;
+height=13e-3;
+no_sub_x = 5;
+no_sub_y = 30;
+focus = [0 0 60]/1000;
+Rfocus = 60e-3;
+c =1540;
+
+field_init(0);
+
+Th = xdc_focused_array(no_elements, width, height, kerf, Rfocus, no_sub_x, no_sub_y, focus);
+figure;
+show_xdc_geir(Th, 1);
+axis equal;
+view(3);
+
+% 
+fs = 100e6; %sampling freq (100Mhz)
+f0 = 2.5e6; % transducer center freq (2.5Mhz)
+t0 = 1/f0; 
+dt = 1/fs;  %sampling period
+set_sampling(fs);
+
+
+%% Impulse setup
+t_ir = -2/f0:1/fs:2/f0;
+Bw = 0.6;
+impulse_response = gauspuls(t_ir, f0, Bw);
+xdc_impulse (Th, impulse_response);
+figure;
+excitation = square(2*pi*f0*(0:dt:1.5*t0));
+plot(0:dt:1.5*t0, excitation);
+xlabel("time (s)");
+title("excitation pulse");
+xdc_excitation(Th, excitation);
+figure;
+plot(t_ir, impulse_response);
+xlabel("time (s)");
+title("impulse response");
+figure;
+freqz(impulse_response,1,1024,fs);
+
+%% setup tx Apod
+%txApodWeights = ones(1, no_elements);
+%txApodWeights = hanning(no_elements)';
+txApodWeights = tukeywin(no_elements, 0.3)';
+figure;
+stem(txApodWeights);
+xdc_apodization(Th, 0, txApodWeights);
+
+
+%% pressure response from x=-15mm to x=15mm, depth 5~150mm
+Nx = 81; Nz = 59;
+x0=linspace(-25e-3,25e-3,Nx);
+z0=linspace( 5e-3,250e-3,Nz);
+[X,Z]=meshgrid(x0,z0);
+measure_point = [X(:), zeros(length(X(:)),1),Z(:)];
+[hp_x0, t_start]=calc_hp(Th, measure_point);
+figure;
+tAx_hp = t_start+(0:length(hp_x0)-1)/fs;
+rms_hp_x0 = rms(hp_x0);
+rms_hp_x0 = rms_hp_x0/max(rms_hp_x0);
+BPmatrix = reshape(rms_hp_x0,Nz,Nx);
+pcolor(x0*1000,z0*1000,20*log10(BPmatrix));
+shading interp
+colorbar;
+caxis([-30 0]);
+xlabel("x mm");
+ylabel("z mm");
+title("beam profile comparing to global maxmium");
+
+
+BPmatrix = rms(hp_x0);
+BPmatrix = reshape(BPmatrix,Nz,Nx);
+BPmatrix_s = max(BPmatrix');
+BPmatrix_n = min(BPmatrix');
+BPmatrix= BPmatrix./repmat(max(BPmatrix')', 1,Nx); 
+SNR = BPmatrix_s./BPmatrix_n;
+figure;
+plot(z0*1000,SNR);
+xlabel("depth (mm)");
+title("SNR based on same depth SNR");
+
+figure;
+pcolor(x0*1000,z0*1000,20*log10(BPmatrix));
+shading interp
+colorbar;
+caxis([-30 0]);
+xlabel("x mm");
+ylabel("z mm");
+title("beam profile comparing to the same depth maxmium");
+
+
+
+
+
+
+
+
+##### SOURCE END #####
+--></body></html>
