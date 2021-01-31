@@ -19,17 +19,17 @@ apodTx = 0;                 % Transmit apodization. 0:boxcar, 1:Hanning, 2:Cosin
 apodRx = 0;                 % Receive apodization. 0:boxcar, 1:Hanning, 2:Cosine-tapered 0.3
 dynamic_receive_focus = 1;  % Enable dynamic receive focusing.
 simType = 'txrx';             % Simulation type. Transmit:'tx', receive:'rx', pulse-echo:'txrx'
-txAngle = rxAngle;%-0/180*pi;        % Transmit beam angle
+
 
 % Set receive MLA offsets
 lambda = c/f0;              % Wave length of center frequency
 aTx = N_elements*pitch-kerf;% Aperture width
 dThetaTx = lambda/aTx;      % Transmit beam Nyquist spacing
-rxAngle = -dThetaTx*3/8;    % Receive beam angle
+% rxAngle = -dThetaTx*3/8;    % Receive beam angle
 % rxAngle = -dThetaTx*1/8;    % Receive beam angle
 % rxAngle =  dThetaTx*1/8;    % Receive beam angle
-% rxAngle =  dThetaTx*3/8;    % Receive beam angle
-
+ rxAngle =  dThetaTx*3/8;    % Receive beam angle
+txAngle = 0; %rxAngle;%-0/180*pi;        % Transmit beam angle
 
 %% GENERATE TRANSMIT AND RECEIVE APERTURE 
 emit_aperture = xdc_focused_array (N_elements, element_width, element_height, kerf, Rfocus, N_sub_x, N_sub_y, focus);
